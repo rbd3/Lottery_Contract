@@ -8,8 +8,11 @@ pragma solidity ^0.8.28;
  * @dev implements chainlink
  */
 contract Raffle {
-    error SendMoreToEnterRaffle();
+    error Raffle_SendMoreToEnterRaffle(); //add Raffle to see witch contract is the error. useful if more than on contract
     uint256 private immutable i_entranceFee;
+    address payable[] private s_players;
+    /* event */
+    event RaffleEntered(address indexed player);
 
     constructor(uint256 entranceFee) {
         i_entranceFee = entranceFee;
@@ -20,7 +23,9 @@ contract Raffle {
         // if (msg.value < i_entranceFee) {
         //     revert SendMoreToEnterRaffle();
         // }
-        require(msg.value >= i_entranceFee, SendMoreToEnterRaffle()); // since 0.8.23
+        require(msg.value >= i_entranceFee, Raffle_SendMoreToEnterRaffle()); // since 0.8.23
+        s_players.push(payable(msg.sender));
+        emit RaffleEntered(msg.sender);
     }
 
     function pickWinner() public {}
