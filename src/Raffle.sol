@@ -13,7 +13,8 @@ import {VRFV2PlusClient} from "lib/chainlink-brownie-contracts/contracts/src/v0.
 contract Raffle is VRFConsumerBaseV2Plus {
     /* error */
     error Raffle_SendMoreToEnterRaffle(); //add Raffle to see witch contract is the error. useful if more than on contract
-    error TimeExpired();
+    error Raffle_TimeExpired();
+    error Raffle_TransfertFailed();
 
     uint16 private constant requestConfirmations = 3;
     uint32 private numWords = 1;
@@ -22,6 +23,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     uint256 private immutable s_subscriptionId;
     uint32 private immutable s_callbackGasLimit;
     address payable[] private s_players;
+    address private s_recentWinner;
 
     /* The duration of the lottery in seconds */
     uint256 private immutable i_interval;
@@ -58,7 +60,10 @@ contract Raffle is VRFConsumerBaseV2Plus {
     }
 
     function pickWinner() external {
-        require(block.timestamp - s_lastTimestamp > i_interval, TimeExpired());
+        require(
+            block.timestamp - s_lastTimestamp > i_interval,
+            Raffle_TimeExpired()
+        );
 
         VRFV2PlusClient.RandomWordsRequest memory request = VRFV2PlusClient
             .RandomWordsRequest({
@@ -84,5 +89,14 @@ contract Raffle is VRFConsumerBaseV2Plus {
     function fulfillRandomWords(
         uint256 requestId,
         uint256[] calldata randomWords
-    ) internal override {}
+    ) internal override {
+        uint256 indexOfWinner = randomWords[0] % s_players.length;
+        address payable recentWinner = s_players[indexOfWinner];
+        s_recentWinner = recentWinner;
+
+        (bool success, ) = recentWinner.call{value: address(this).balance}("");
+        if (!success) {
+            revert Raffle_TransfertFailed();
+        }
+    }
 }
