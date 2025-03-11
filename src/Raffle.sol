@@ -16,6 +16,11 @@ contract Raffle is VRFConsumerBaseV2Plus {
     error Raffle_TimeExpired();
     error Raffle_TransfertFailed();
     error Raffle_RaffleNotOpen();
+    error Raffle_UpkeepNeeded(
+        address balance,
+        uint256 playerLength,
+        uint256 raffleState
+    );
 
     /* Type declaration */
     enum RaffleState {
@@ -69,12 +74,19 @@ contract Raffle is VRFConsumerBaseV2Plus {
         emit RaffleEntered(msg.sender);
     }
 
-    function pickWinner() external {
-        require(
-            block.timestamp - s_lastTimestamp > i_interval,
-            Raffle_TimeExpired()
-        );
-
+    function performUpkeep(bytes calldata /* performData */) external {
+        // require(
+        //     block.timestamp - s_lastTimestamp > i_interval,
+        //     Raffle_TimeExpired()
+        // );
+        (bool upkeepNeeded, ) = checkUpkeep("");
+        if (!upkeepNeeded) {
+            revert Raffle_UpkeepNeeded(
+                address(this).balance,
+                s_players.length,
+                uint256(s_raffleState)
+            );
+        }
         s_raffleState = RaffleState.CALCULATING;
 
         VRFV2PlusClient.RandomWordsRequest memory request = VRFV2PlusClient
@@ -108,11 +120,24 @@ contract Raffle is VRFConsumerBaseV2Plus {
         s_raffleState = RaffleState.OPEN;
         s_players = new address payable[](0);
         s_lastTimestamp = block.timestamp;
+        emit WinnerPicked(recentWinner);
 
         (bool success, ) = recentWinner.call{value: address(this).balance}("");
         if (!success) {
             revert Raffle_TransfertFailed();
         }
-        emit WinnerPicked(recentWinner);
+    }
+
+    //function to pick a winner
+    function checkUpkeep(
+        bytes memory /* checkData */
+    ) public view returns (bool upkeepNeeded, bytes memory /* performData */) {
+        bool timeHasPassed = (block.timestamp - s_lastTimestamp) >= i_interval;
+        bool isOpen = RaffleState.OPEN;
+        bool hasBalance = address(this).balance > 0;
+        bool hasPlayer = s_players.length > 0;
+        upkeepNeeded = timeHasPassed && isOpen && hasBalance && hasPlayer;
+
+        return (upkeepNeeded, "");
     }
 }
