@@ -17,7 +17,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     error Raffle_TransfertFailed();
     error Raffle_RaffleNotOpen();
     error Raffle_UpkeepNeeded(
-        address balance,
+        uint256 balance,
         uint256 playerLength,
         uint256 raffleState
     );
@@ -133,7 +133,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         bytes memory /* checkData */
     ) public view returns (bool upkeepNeeded, bytes memory /* performData */) {
         bool timeHasPassed = (block.timestamp - s_lastTimestamp) >= i_interval;
-        bool isOpen = RaffleState.OPEN;
+        bool isOpen = s_raffleState == RaffleState.OPEN;
         bool hasBalance = address(this).balance > 0;
         bool hasPlayer = s_players.length > 0;
         upkeepNeeded = timeHasPassed && isOpen && hasBalance && hasPlayer;
