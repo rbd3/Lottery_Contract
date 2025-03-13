@@ -39,4 +39,9 @@ contract RaffleTest is Test {
     /*//////////////////////////////////////////////////////////////
                               ENTER RAFFLE
     //////////////////////////////////////////////////////////////*/
+    function testRevertWhenNotEnoughEth() public {
+        vm.prank(PLAYER);
+        vm.expectRevert(Raffle.Raffle_SendMoreToEnterRaffle.selector);
+        raffle.enterRaffle();
+    }
 }
