@@ -64,12 +64,12 @@ contract HelperConfig is CodeCostants, Script {
     }
 
     function createOrGetAnvilEthConfig() public returns (NetworkConfig memory) {
-        //check if networkConfig exist
+        // Check if networkConfig exists
         if (localNetworkConfig.vrfCordinator != address(0)) {
             return localNetworkConfig;
         }
 
-        //deploy mock
+        // Deploy mock
         vm.startBroadcast();
         VRFCoordinatorV2_5Mock vrfCordinatorMock = new VRFCoordinatorV2_5Mock(
             MOCK_BASE_FEE,
