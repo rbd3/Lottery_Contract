@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
-
 import {Test} from "forge-std/Test.sol";
 import {DeployRaffle} from "script/DeployRaffle.s.sol";
 import {Raffle} from "src/Raffle.sol";
@@ -18,6 +17,10 @@ contract RaffleTest is Test {
     bytes32 gasLane;
     uint256 subscriptionId;
     uint32 callbackGasLimit;
+
+    /* event */
+    event RaffleEntered(address indexed player);
+    event WinnerPicked(address indexed winner);
 
     function setUp() external {
         DeployRaffle deployer = new DeployRaffle();
@@ -52,5 +55,23 @@ contract RaffleTest is Test {
         raffle.enterRaffle{value: entranceFee}();
         address recordsPlayer = raffle.getPlayer(0);
         assert(recordsPlayer == PLAYER);
+    }
+
+    function testEnterRaffleEvent() public {
+        vm.prank(PLAYER);
+        vm.expectEmit(true, false, false, false, address(raffle));
+
+        emit RaffleEntered(PLAYER);
+
+        raffle.enterRaffle{value: entranceFee}();
+    }
+
+    function testDontAllowPlayerWhenRaffleCalculating() public {
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: entranceFee}();
+        vm.warp(block.timestamp + interval + 1);
+        vm.roll(block.number + 1);
+        raffle.performUpkeep("");
+        vm.expectRevert(Raffle.Raffle_RaffleNotOpen.selector);
     }
 }
