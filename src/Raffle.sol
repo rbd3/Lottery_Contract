@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
 import {VRFConsumerBaseV2Plus} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/dev/VRFConsumerBaseV2Plus.sol";
@@ -28,6 +28,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         CALCULATING //1
     }
     /* State variable */
+
     uint16 private constant requestConfirmations = 3;
     uint32 private numWords = 1;
     uint256 private immutable i_entranceFee;
@@ -44,6 +45,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     /* event */
     event RaffleEntered(address indexed player);
     event WinnerPicked(address indexed winner);
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
     constructor(
         uint256 entranceFee,
@@ -103,6 +105,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
             });
 
         uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
+        emit RequestedRaffleWinner(requestId);
     }
 
     //getters
@@ -112,6 +115,10 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
     function getRaffleState() external view returns (RaffleState) {
         return s_raffleState;
+    }
+
+    function getPlayer(uint256 indexOfPlayer) external view returns (address) {
+        return s_players[indexOfPlayer];
     }
 
     function fulfillRandomWords(
