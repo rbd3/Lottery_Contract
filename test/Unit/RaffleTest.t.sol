@@ -38,9 +38,22 @@ contract RaffleTest is Test {
         vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
     }
 
+    /*//////////////////////////////////////////////////////////////
+                                GETTERS
+    //////////////////////////////////////////////////////////////*/
+
     function testRaffleStateInitialized() public view {
         assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN); //check initiale state
     }
+
+    function testRaffleEntranceFee() public {
+        //assert(raffle.getEntranceFee() == entranceFee);
+        assertEq(raffle.getEntranceFee(), entranceFee);
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                              ENTER RAFFLE
+    //////////////////////////////////////////////////////////////*/
 
     modifier raffleEntered() {
         vm.prank(PLAYER);
@@ -50,9 +63,6 @@ contract RaffleTest is Test {
         _;
     }
 
-    /*//////////////////////////////////////////////////////////////
-                              ENTER RAFFLE
-    //////////////////////////////////////////////////////////////*/
     function testRevertWhenNotEnoughEth() public {
         vm.prank(PLAYER);
         vm.expectRevert(Raffle.Raffle_SendMoreToEnterRaffle.selector);
