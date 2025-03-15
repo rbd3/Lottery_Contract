@@ -5,6 +5,7 @@ import {Vm} from "forge-std/Vm.sol";
 import {DeployRaffle} from "script/DeployRaffle.s.sol";
 import {Raffle} from "src/Raffle.sol";
 import {HelperConfig} from "script/HelperConfig.s.sol";
+import {VRFCoordinatorV2_5Mock} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 
 contract RaffleTest is Test {
     Raffle public raffle;
@@ -46,7 +47,7 @@ contract RaffleTest is Test {
         assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN); //check initiale state
     }
 
-    function testRaffleEntranceFee() public {
+    function testRaffleEntranceFee() public view {
         //assert(raffle.getEntranceFee() == entranceFee);
         assertEq(raffle.getEntranceFee(), entranceFee);
     }
@@ -148,5 +149,19 @@ contract RaffleTest is Test {
         Raffle.RaffleState rState = raffle.getRaffleState();
         assert(uint256(requestId) > 0);
         assert(uint256(rState) == 1);
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                           FULFILLRANDOMWORDS
+    //////////////////////////////////////////////////////////////*/
+
+    function testFulfillWordsCanOnlyCalledAfterPerforUpKeep(
+        uint256 requestId //add requestId for fuzz test
+    ) public raffleEntered {
+        vm.expectRevert(VRFCoordinatorV2_5Mock.InvalidRequest.selector);
+        VRFCoordinatorV2_5Mock(vrfCordinator).fulfillRandomWords(
+            requestId,
+            address(raffle)
+        );
     }
 }
