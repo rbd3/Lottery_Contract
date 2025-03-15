@@ -23,6 +23,7 @@ contract RaffleTest is Test {
     /* event */
     event RaffleEntered(address indexed player);
     event WinnerPicked(address indexed winner);
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
     function setUp() external {
         DeployRaffle deployer = new DeployRaffle();
@@ -163,5 +164,49 @@ contract RaffleTest is Test {
             requestId,
             address(raffle)
         );
+    }
+
+    function testFulfillRandomWordsPickWinnerResetaAndSendMoney()
+        public
+        raffleEntered
+    {
+        uint256 additionalEntrants = 3;
+        uint256 startingIndex = 1;
+        address expectedWinner = address(1);
+
+        for (
+            uint256 i = startingIndex;
+            i < startingIndex + additionalEntrants;
+            i++
+        ) {
+            address newPlayer = address(uint160(i));
+            hoax(newPlayer, 1 ether);
+            raffle.enterRaffle{value: entranceFee}();
+        }
+
+        uint256 startTimeStamp = raffle.getLastTimeStamp();
+        uint256 winnerStatingBalance = expectedWinner.balance;
+        vm.recordLogs();
+        raffle.performUpkeep("");
+
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        require(entries.length > 1, "Not enough log entries recorded.");
+        bytes32 requestId = entries[1].topics[1];
+
+        VRFCoordinatorV2_5Mock(vrfCordinator).fulfillRandomWords(
+            uint256(requestId),
+            address(raffle)
+        );
+
+        address recentWinner = raffle.getRecentWinner();
+        Raffle.RaffleState rState = raffle.getRaffleState();
+        uint256 winnerBalance = recentWinner.balance;
+        uint256 lastTimeStamp = raffle.getLastTimeStamp();
+        uint256 prize = entranceFee * (additionalEntrants + 1);
+
+        assert(recentWinner == expectedWinner);
+        assert(uint256(rState) == 0);
+        assert(winnerBalance == winnerStatingBalance + prize);
+        assert(lastTimeStamp > startTimeStamp);
     }
 }

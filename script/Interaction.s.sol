@@ -60,8 +60,11 @@ contract FundSubscription is CodeCostants, Script {
             vm.startBroadcast();
             VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(
                 subscriptionId,
-                FUND_AMOUNT
+                FUND_AMOUNT * 100
             );
+            console.log("Contract balance: ", address(this).balance);
+            console.log("Required fund amount: ", FUND_AMOUNT);
+
             vm.stopBroadcast();
         } else {
             vm.startBroadcast();
