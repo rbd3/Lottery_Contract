@@ -45,6 +45,7 @@ This smart contract, named Raffle, is a decentralized lottery system built on th
     <li><a href="https://soliditylang.org/">Solidity</a></li>
     <li><a href="https://docs.chain.link/vrf/v2-5/getting-started">Chainlink VRF</a></li>
   </ul>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- Features -->
