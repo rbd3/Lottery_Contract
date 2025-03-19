@@ -18,11 +18,9 @@ contract CreateSubscription is Script {
     }
 
     function createSubscription(address vrfCordinator) public returns (uint256, address) {
-        console.log("creating subscription on chain id: ", block.chainid);
         vm.startBroadcast();
         uint256 subId = VRFCoordinatorV2_5Mock(vrfCordinator).createSubscription();
         vm.stopBroadcast();
-        console.log("your subscription id is ", subId);
 
         return (subId, vrfCordinator);
     }
@@ -48,14 +46,9 @@ contract FundSubscription is CodeCostants, Script {
     }
 
     function fundSubscription(address vrfCoordinator, uint256 subscriptionId, address linkToken) public {
-        console.log("using vrfcordinator: ", vrfCoordinator);
-
         if (block.chainid == LOCAL_CHAIN_ID) {
             vm.startBroadcast();
             VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subscriptionId, FUND_AMOUNT * 100);
-            console.log("Contract balance: ", address(this).balance);
-            console.log("Required fund amount: ", FUND_AMOUNT);
-
             vm.stopBroadcast();
         } else {
             vm.startBroadcast();
@@ -79,7 +72,6 @@ contract AddConsummer is Script {
     }
 
     function addConsummer(address contractToAddTovrf, address vrfCoordinator, uint256 subscriptionId) public {
-        console.log("adding consummer contract", contractToAddTovrf);
         vm.startBroadcast();
         VRFCoordinatorV2_5Mock(vrfCoordinator).addConsumer(subscriptionId, contractToAddTovrf);
         vm.stopBroadcast();

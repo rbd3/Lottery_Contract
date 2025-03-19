@@ -56,7 +56,6 @@ contract Raffle is VRFConsumerBaseV2Plus {
         i_entranceFee = entranceFee;
         i_interval = interval;
         s_lastTimestamp = block.timestamp;
-        // s_vrfCoordinator.requestRandomWords();
         s_keyHash = gasLane;
         s_subscriptionId = subscriptionId;
         s_callbackGasLimit = callbackGasLimit;
@@ -64,21 +63,14 @@ contract Raffle is VRFConsumerBaseV2Plus {
     }
 
     function enterRaffle() external payable {
-        // require(msg.value >= i_entranceFee, "Not enought ETH sent");
-        // if (msg.value < i_entranceFee) {
-        //     revert SendMoreToEnterRaffle();
-        // }
         require(msg.value >= i_entranceFee, Raffle_SendMoreToEnterRaffle()); // since 0.8.26
         require(s_raffleState == RaffleState.OPEN, Raffle_RaffleNotOpen());
+
         s_players.push(payable(msg.sender));
         emit RaffleEntered(msg.sender);
     }
 
     function performUpkeep(bytes calldata /* performData */ ) external {
-        // require(
-        //     block.timestamp - s_lastTimestamp > i_interval,
-        //     Raffle_TimeExpired()
-        // );
         (bool upkeepNeeded,) = checkUpkeep("");
         if (!upkeepNeeded) {
             revert Raffle_UpkeepNeeded(address(this).balance, s_players.length, uint256(s_raffleState));
@@ -120,15 +112,18 @@ contract Raffle is VRFConsumerBaseV2Plus {
         return s_recentWinner;
     }
 
-    function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
+    function fulfillRandomWords(
+        uint256,
+        /* requestId */
+        uint256[] calldata randomWords
+    ) internal override {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
-        s_raffleState = RaffleState.OPEN;
         s_players = new address payable[](0);
+        s_raffleState = RaffleState.OPEN;
         s_lastTimestamp = block.timestamp;
         emit WinnerPicked(recentWinner);
-
         (bool success,) = recentWinner.call{value: address(this).balance}("");
         if (!success) {
             revert Raffle_TransfertFailed();

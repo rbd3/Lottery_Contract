@@ -23,8 +23,6 @@ contract DeployRaffle is Script {
             FundSubscription fundSubscription = new FundSubscription();
             fundSubscription.fundSubscription(config.vrfCordinator, config.subscriptionId, config.link);
         }
-
-        // Start broadcasting transactions (for deploying the Raffle contract)
         vm.startBroadcast();
 
         // Deploy the Raffle contract
@@ -36,8 +34,6 @@ contract DeployRaffle is Script {
             config.subscriptionId,
             config.callbackGasLimit
         );
-
-        // Stop broadcasting transactions
         vm.stopBroadcast();
 
         AddConsummer addConsumer = new AddConsummer();
