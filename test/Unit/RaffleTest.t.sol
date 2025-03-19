@@ -51,7 +51,6 @@ contract RaffleTest is Test {
     }
 
     function testRaffleEntranceFee() public view {
-        //assert(raffle.getEntranceFee() == entranceFee);
         assertEq(raffle.getEntranceFee(), entranceFee);
     }
 

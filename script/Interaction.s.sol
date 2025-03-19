@@ -3,7 +3,8 @@ pragma solidity ^0.8.28;
 
 import {Script, console} from "forge-std/Script.sol";
 import {HelperConfig, CodeCostants} from "script/HelperConfig.s.sol";
-import {VRFCoordinatorV2_5Mock} from "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+import {VRFCoordinatorV2_5Mock} from
+    "lib/chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
 import {LinkToken} from "test/mocks/LinkToken.sol";
 import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
 
@@ -11,17 +12,14 @@ contract CreateSubscription is Script {
     function createSubscriptionUsingConfig() public returns (uint256, address) {
         HelperConfig helperConfig = new HelperConfig();
         address vrfCoordinator = helperConfig.getConfig().vrfCordinator;
-        (uint256 subId, ) = createSubscription(vrfCoordinator);
+        (uint256 subId,) = createSubscription(vrfCoordinator);
 
         return (subId, vrfCoordinator);
     }
 
-    function createSubscription(
-        address vrfCordinator
-    ) public returns (uint256, address) {
+    function createSubscription(address vrfCordinator) public returns (uint256, address) {
         vm.startBroadcast();
-        uint256 subId = VRFCoordinatorV2_5Mock(vrfCordinator)
-            .createSubscription();
+        uint256 subId = VRFCoordinatorV2_5Mock(vrfCordinator).createSubscription();
         vm.stopBroadcast();
 
         return (subId, vrfCordinator);
@@ -47,25 +45,14 @@ contract FundSubscription is CodeCostants, Script {
         fundSubscription(vrfCoordinator, subscriptionId, linkToken);
     }
 
-    function fundSubscription(
-        address vrfCoordinator,
-        uint256 subscriptionId,
-        address linkToken
-    ) public {
+    function fundSubscription(address vrfCoordinator, uint256 subscriptionId, address linkToken) public {
         if (block.chainid == LOCAL_CHAIN_ID) {
             vm.startBroadcast();
-            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(
-                subscriptionId,
-                FUND_AMOUNT * 100
-            );
+            VRFCoordinatorV2_5Mock(vrfCoordinator).fundSubscription(subscriptionId, FUND_AMOUNT * 100);
             vm.stopBroadcast();
         } else {
             vm.startBroadcast();
-            LinkToken(linkToken).transferAndCall(
-                vrfCoordinator,
-                FUND_AMOUNT,
-                abi.encode(subscriptionId)
-            );
+            LinkToken(linkToken).transferAndCall(vrfCoordinator, FUND_AMOUNT, abi.encode(subscriptionId));
             vm.stopBroadcast();
         }
     }
@@ -73,10 +60,7 @@ contract FundSubscription is CodeCostants, Script {
 
 contract AddConsummer is Script {
     function run() external {
-        address mostRecentDeploy = DevOpsTools.get_most_recent_deployment(
-            "Raffle",
-            block.chainid
-        );
+        address mostRecentDeploy = DevOpsTools.get_most_recent_deployment("Raffle", block.chainid);
         addConsummerUsingConfig(mostRecentDeploy);
     }
 
@@ -87,16 +71,9 @@ contract AddConsummer is Script {
         addConsummer(mostRecentDeploy, vrfCoordinator, subscriptionId);
     }
 
-    function addConsummer(
-        address contractToAddTovrf,
-        address vrfCoordinator,
-        uint256 subscriptionId
-    ) public {
+    function addConsummer(address contractToAddTovrf, address vrfCoordinator, uint256 subscriptionId) public {
         vm.startBroadcast();
-        VRFCoordinatorV2_5Mock(vrfCoordinator).addConsumer(
-            subscriptionId,
-            contractToAddTovrf
-        );
+        VRFCoordinatorV2_5Mock(vrfCoordinator).addConsumer(subscriptionId, contractToAddTovrf);
         vm.stopBroadcast();
     }
 }
