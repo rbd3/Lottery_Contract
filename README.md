@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <img src=" public/ lottery-smart-contract.webp" alt="logo" width="140"  height="auto" />
+  <img src="" alt="logo" width="140"  height="auto" />
   <br/>
 
   <h3><b>DECENTRALIZED LOTTERY CONTRACT</b></h3>
@@ -32,34 +32,34 @@
 
 <!-- PROJECT DESCRIPTION -->
 
-# 📖 DECENTRALIZED LOTTERY CONTRACT <a name="about-project"></a>
-
-This smart contract, named Raffle, is a decentralized lottery system built on the Ethereum blockchain using Solidity. It leverages Chainlink's Verifiable Random Function (VRF) to ensure fair and transparent selection of winners. The contract allows participants to enter the raffle by sending a specified amount of Ether, and after a predefined interval, a winner is randomly selected and awarded the entire balance of the contract.
+# 📖  Decentralized Voting System 🗳️  <a name="about-project"></a>
+A blockchain-based voting system that enables:  
+- Secure proposal creation  
+- Delegated voting rights  
+- Tamper-proof vote recording  
+- Transparent result calculation  
 
 ## 🛠 Built With <a name="built-with"></a>
 
-### Tech Stack <a name="tech-stack"></a>
+### Tech Stack ⚙️ <a name="tech-stack"></a>
 
   <ul>
     <li><a href="https://book.getfoundry.sh/">Foundry</a></li>
     <li><a href="https://soliditylang.org/">Solidity</a></li>
-    <li><a href="https://docs.chain.link/vrf/v2-5/getting-started">Chainlink VRF</a></li>
+    <li><a href="https://ethereum.org/en/developers/docs/evm/">EVM</a></li>
   </ul>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- Features -->
 
-### Key Features <a name="key-features"></a>
+### Key Features  ✨   <a name="key-features"></a>
 
-- **Decentralized and Transparent: The use of Chainlink VRF ensures that the selection of the winner is random and verifiable, eliminating any possibility of manipulation.**
-
-- **Automated Winner Selection: The contract automatically checks if the conditions for selecting a winner are met (e.g., time interval has passed, there are participants, and the contract has a balance). If conditions are met, it triggers the random selection process.**
-
-- **Secure and Efficient: The contract includes various checks and error handling to ensure that only valid transactions are processed, and funds are securely transferred to the winner.**
-
-- **Immutable Parameters: Key parameters such as the entrance fee, interval duration, and VRF configuration are set during contract deployment and cannot be altered, ensuring fairness and consistency.**
-
+✅ **Chairperson-controlled voter registration**  
+✅ **Vote delegation to trusted parties**  
+✅ **Automatic tie detection between proposals**  
+✅ **Fully auditable voting history**  
+✅ **Gas-efficient operations**
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -82,9 +82,9 @@ In order to run this project you need to install the following items:
 Install this project by using:
 
 ```
-git clone https://github.com/rbd3/Lottery_Contract.git
-cd Lottery_Contract
-make install
+git clone https://github.com/rbd3/Voting-Contract.git
+cd Voting-Contract
+forge install
 ```
 
 ### Run tests
@@ -93,7 +93,7 @@ To run tests, run the following command:
 
 
 ```
-make test
+forge test
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -134,7 +134,7 @@ Here are some potential future features that could be added to the Raffle Lotter
 
 Contributions, issues, and feature requests are welcome!
 
-Feel free to check the [issues page](https://github.com/rbd3/Lottery_Contract/issues/).
+Feel free to check the [issues page](https://github.com/rbd3/Voting-Contract/issues/).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -143,6 +143,7 @@ Feel free to check the [issues page](https://github.com/rbd3/Lottery_Contract/is
 ## ⭐️ Show your support <a name="support"></a>
 
 Give a star⭐️ or a thumbs up 👍 if you like this project! You can visit my GitHub profile for more of my projects.
+[link](https://github.com/rbd3)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -151,7 +152,7 @@ Give a star⭐️ or a thumbs up 👍 if you like this project! You can visit my
 ## 🙏 Acknowledgments <a name="acknowledgements"></a>
 
 - My family who supported me
-- Patrick Collins
+- Patrick Collins who teach me
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
